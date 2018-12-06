@@ -37,7 +37,6 @@ public class Util {
         private static int NB_BLOBS = 7;
         private static Bitmap changedBitmap;
 
-
         // public static boolean findBlobs(String imageAsBase64) {
         public static String findBlobs(String imageAsBase64) {
 
@@ -46,17 +45,12 @@ public class Util {
             options.inDither = true;
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-            // error says, the native function getBytes() is being called on a null object.
-            // but i do not even know where is even getBytes being called?
-
-
             byte[] decodedString = Base64.decode(imageAsBase64, Base64.DEFAULT);
             changedBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             
             // checks if image is successfully received or not
             if (changedBitmap != null) {
                 try {
-                    // ??? What the hell is saveBitmap()
                     saveBitmap(changedBitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -65,13 +59,9 @@ public class Util {
                 // samples basically is list of blobs found
                 samples = new HashMap<>();
 
-                // ??? rects
-                // ??? Rect
-                // ??? NB_BLOBS
                 rects = new Rect[NB_BLOBS];
                 int rectIdx = 0;
 
-                // // ??? Mat
                 Mat raw = new Mat();
                 Mat gray = new Mat();
                 Mat th = new Mat();
@@ -94,7 +84,6 @@ public class Util {
                 Imgproc.medianBlur(th, th, 5);
                 
                 // // Returns a structuring element of the specified size and shape for morphological operations.
-                // // ??? Size()
                 Mat se = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(15, 15));
 
                 // // Use the OpenCV function morphologyEx to apply Morphological Transformation such as:
@@ -105,9 +94,6 @@ public class Util {
                 //     // Black Hat
                 Imgproc.morphologyEx(th, th, Imgproc.MORPH_CLOSE, se);
 
-                // // ??? List
-                // // ??? MatOfPoint
-                // // ??? ArrayList
                 List<MatOfPoint> contours = new ArrayList<>();
                 Mat hieh = new Mat();
 
@@ -115,23 +101,17 @@ public class Util {
                 // // contours: an outline representing or bounding the shape or form of something.
                 Imgproc.findContours(th, contours, hieh, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 
-                // // ??? What does this function do?
                 hieh.release();
 
-                // // ??? HashMap()
                 HashMap<Integer, Integer> dict = new HashMap<>();
                 for (int idx = 0; idx < contours.size(); idx++) {
                     MatOfPoint contour = contours.get(idx);
                     
-                    // ??? isValidBlob
                     if (isValidBlob(contour)) {
-                        // ??? Rect, I am pretty sure, I have marked it above
                         Rect r = Imgproc.boundingRect(contour);
 
-                        // ??? Point
                         Point center = new Point(r.x + r.width / 2, r.y + r.height / 2);
 
-                        // ??? addToDict and why it is important
                         addToDict(dict, center);
                     }
                 }
@@ -141,11 +121,9 @@ public class Util {
                 boolean foundSixBlobs = false;
                 int centerY = 0;
 
-                // ??? Iterator
                 Iterator it = dict.entrySet().iterator(); 
 
                 while (it.hasNext()) {
-                    // ??? Map
                     Map.Entry pair = (Map.Entry) it.next();
                     int value = (int) pair.getValue();
                     if (value == NB_BLOBS-1) { // changed

@@ -95,8 +95,8 @@ class ImagePickerTest extends React.Component {
     render() {
         return (
             <View>
-                <Text>Hello World</Text>
-                <Button title="Ticklick" onPress={this.onButtonPress} />
+                <Text>Please choose the image of card to analyze:</Text>
+                <Button title="Choose Image" onPress={this.onButtonPress} />
                 <Toast ref="toast" position="center" />
             </View>
         );
