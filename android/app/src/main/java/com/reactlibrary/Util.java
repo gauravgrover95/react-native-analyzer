@@ -123,14 +123,28 @@ public class Util {
 
                 Iterator it = dict.entrySet().iterator(); 
 
+                List<Integer> x = new ArrayList<Integer>();
+                int iterations = 0;
+                int value = 0;
                 while (it.hasNext()) {
                     Map.Entry pair = (Map.Entry) it.next();
-                    int value = (int) pair.getValue();
+                    value = (int) pair.getValue();
                     if (value == NB_BLOBS-1) { // changed
                         centerY = (int) pair.getKey();
                         foundSixBlobs = true;
                     }
+                    iterations++;
+                    x.add(value);
                 }
+
+                // return String.valueOf(foundSixBlobs); // false
+                // return Integer.toString(value); // 2
+                // return Integer.toString(iterations); // 15
+                // return Integer.toString(x.get(0)); // 3
+                // return Integer.toString(x.get(1)); // 1
+                // return Integer.toString(x.get(2)); // 1
+                // return Integer.toString(x.get(3)); // 1
+
                 if (!foundSixBlobs)
                     // return false;
                     return "false from upper bottom";
