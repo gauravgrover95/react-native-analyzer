@@ -41,7 +41,8 @@ public class RNOpenCvLibraryModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void findBlobs(String imageAsBase64, Callback errorCallback, Callback successCallback) {
         // boolean result = Util.findBlobs(imageAsBase64);
-        String result = Util.findBlobs(imageAsBase64);
+        // String result = Util.findBlobs(imageAsBase64);
+        int result = Util.findBlobs(imageAsBase64);
         successCallback.invoke(result);
     }
 

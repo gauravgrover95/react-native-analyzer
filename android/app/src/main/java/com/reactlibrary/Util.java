@@ -38,7 +38,8 @@ public class Util {
         private static Bitmap changedBitmap;
 
         // public static boolean findBlobs(String imageAsBase64) {
-        public static String findBlobs(String imageAsBase64) {
+        // public static String findBlobs(String imageAsBase64) {
+        public static int findBlobs(String imageAsBase64) {
 
             // Converts Base64 image into Bitmap format from the demo app
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -101,8 +102,12 @@ public class Util {
                 // // contours: an outline representing or bounding the shape or form of something.
                 Imgproc.findContours(th, contours, hieh, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 
+                // int numCountours = contours.size();
+                // return numCountours;
+
                 hieh.release();
 
+                int numValidBlobs = 0;
                 HashMap<Integer, Integer> dict = new HashMap<>();
                 for (int idx = 0; idx < contours.size(); idx++) {
                     MatOfPoint contour = contours.get(idx);
@@ -113,49 +118,52 @@ public class Util {
                         Point center = new Point(r.x + r.width / 2, r.y + r.height / 2);
 
                         addToDict(dict, center);
+                        numValidBlobs++;
                     }
                 }
 
+                return numValidBlobs;
 
-                // Logic to determine if we have found all six blobs or not
-                boolean foundSixBlobs = false;
-                int centerY = 0;
+                // // Logic to determine if we have found all six blobs or not
+                // boolean foundSixBlobs = false;
+                // int centerY = 0;
 
-                Iterator it = dict.entrySet().iterator(); 
+                // Iterator it = dict.entrySet().iterator(); 
 
-                List<Integer> x = new ArrayList<Integer>();
-                int iterations = 0;
-                int value = 0;
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry) it.next();
-                    value = (int) pair.getValue();
-                    if (value == NB_BLOBS-1) { // changed
-                        centerY = (int) pair.getKey();
-                        foundSixBlobs = true;
-                    }
-                    iterations++;
-                    x.add(value);
-                }
+                // List<Integer> x = new ArrayList<Integer>();
+                // int iterations = 0;
+                // int value = 0;
+                // while (it.hasNext()) {
+                //     Map.Entry pair = (Map.Entry) it.next();
+                //     value = (int) pair.getValue();
+                //     if (value == NB_BLOBS-1) { // changed
+                //         centerY = (int) pair.getKey();
+                //         foundSixBlobs = true;
+                //     }
+                //     iterations++;
+                //     x.add(value);
+                // }
 
-                // return String.valueOf(foundSixBlobs); // false
-                // return Integer.toString(value); // 2
-                // return Integer.toString(iterations); // 15
-                // return Integer.toString(x.get(0)); // 3
-                // return Integer.toString(x.get(1)); // 1
-                // return Integer.toString(x.get(2)); // 1
-                // return Integer.toString(x.get(3)); // 1
+                // // return String.valueOf(foundSixBlobs); // false
+                // // return Integer.toString(value); // 2
+                // // return Integer.toString(iterations); // 15
+                // // return Integer.toString(x.get(0)); // 3
+                // // return Integer.toString(x.get(1)); // 1
+                // // return Integer.toString(x.get(2)); // 1
+                // // return Integer.toString(x.get(3)); // 1
 
-                if (!foundSixBlobs)
-                    // return false;
-                    return "false from upper bottom";
+                // if (!foundSixBlobs)
+                //     // return false;
+                //     return "false from upper bottom";
                 
-                // otherwise
-                // return true;
-                return "true from upper bottom";
+                // // otherwise
+                // // return true;
+                // return "true from upper bottom";
             }
 
             // return false;
-            return "false from lower bottom";
+            // return "false from lower bottom";
+            return 0;
         }
 
         public static File saveBitmap(Bitmap bmp) throws IOException {
@@ -202,10 +210,14 @@ public class Util {
             Rect r = Imgproc.boundingRect(contour);
             float aspectRatio;
             int w = r.width, h = r.height;
+            
+            
             if (w > h)
                 aspectRatio = ((float) w) / h;
             else
                 aspectRatio = ((float) h) / w;
+
+
             if (aspectRatio >= 1.5)
                 flag = false;
             return flag;
