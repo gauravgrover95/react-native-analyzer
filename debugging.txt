@@ -13,3 +13,43 @@ Mat [ 34*1*CV_32SC2, isCont=true, isSubmat=false, nativeObj=0xffffffff8c4fea00, 
 Mat [ 10*1*CV_32SC2, isCont=true, isSubmat=false, nativeObj=0xffffffff8c4fea40, dataAddr=0xffffffff8c50e200 ], 
 
 Mat [ 36*1*CV_32SC2, isCont=true, isSubmat=false, nativeObj=0xffffffff8c4fea80, dataAddr=0xffffffffa4f68980 ], 
+
+
+
+
+
+
+                // List<Integer> x = new ArrayList<Integer>();
+                // int iterations = 0;
+                int value = 0;
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry) it.next();
+                    value = (int) pair.getValue();
+                    if (value == NB_BLOBS-1) { // changed
+                        centerY = (int) pair.getKey();
+                        foundSixBlobs = true;
+                    }
+                    // iterations++;
+                    // x.add(value);
+                }
+
+                // return String.valueOf(foundSixBlobs); // false
+                // return Integer.toString(value); // 2
+                // return Integer.toString(iterations); // 15
+                // return Integer.toString(x.get(0)); // 3
+                // return Integer.toString(x.get(1)); // 1
+                // return Integer.toString(x.get(2)); // 1
+                // return Integer.toString(x.get(3)); // 1
+
+                if (!foundSixBlobs)
+                    return "six blobs not found";
+                    // return false;
+
+                // otherwise
+                // return true;
+            // };
+
+
+// Imgproc.rectangle(raw, new Point(rSmall.x, rSmall.y), new Point(rSmall.x + rSmall.width, rSmall.y + rSmall.height), new Scalar(0, 0, 255), 1);
+
+            //Imgproc.rectangle(raw, new Point(rSmall.x, rSmall.y), new Point(rSmall.x + rSmall.width, rSmall.y + rSmall.height), new Scalar(0, 0, 255), 1);
