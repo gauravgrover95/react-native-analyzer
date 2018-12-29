@@ -27,7 +27,7 @@ class ImagePickerTest extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            cardImageSource: '',
+            cardImageSource: null,
             photoAsBase64: {}
         }
     }
@@ -43,12 +43,13 @@ class ImagePickerTest extends React.Component {
             } else if (response.customButton) {
                 console.log('User tapped custom button: ', response.customButton);
             } else {
-                const source = { uri: response.uri };
+                // const source = { uri: response.uri };
                 // You can also display the image using data:
-                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+                const source = { uri: 'data:image/jpeg;base64,' + response.data };
+                // console.log('source.uri', source.uri);
                 this.setState({
                     ...this.state,
-                    cardImageSource: source,
+                    // cardImageSource: source.uri,
                     photoAsBase64: { content: response.data, photoPath: response.uri },
                 });
                 this.proceedWithFindingBlobs();
@@ -59,16 +60,30 @@ class ImagePickerTest extends React.Component {
 
     proceedWithFindingBlobs() {
         const { content, photoPath } = this.state.photoAsBase64;
-        this.findBlobs(content).then(blobsFound => {
-            console.log('blobsFound', blobsFound);
-            if (blobsFound) {
-                this.refs.toast.show('blobs found', DURATION.FOREVER);
-                // return this.repeatPhoto();
-            } else {
-                this.refs.toast.show('blobs not found', DURATION.FOREVER);
+        
+        // this.findBlobs(content).then(blobsFound => {
+        //     console.log('blobsFound', blobsFound);
+        //     if (blobsFound) {
+        //         this.refs.toast.show('blobs found', DURATION.FOREVER);
+        //         // return this.repeatPhoto();
+        //     } else {
+        //         this.refs.toast.show('blobs not found', DURATION.FOREVER);
+        //     }
+        //     // this.setState({ photoAsBase64: { ...this.state.photoAsBase64, isPhotoPreview: true, photoPath } });
+        // })
+
+        this.findBlobs(content).then(response => {
+            // console.log('response', response);
+            const source = { uri: 'data:image/jpeg;base64,' + response };
+            if (response) {
+                this.setState({
+                    ...this.state,
+                    cardImageSource: source.uri,
+                });
             }
-            // this.setState({ photoAsBase64: { ...this.state.photoAsBase64, isPhotoPreview: true, photoPath } });
-        }).catch(err => {
+        })
+        
+        .catch(err => {
             console.log('err', err)
         });
     }
@@ -97,6 +112,11 @@ class ImagePickerTest extends React.Component {
             <View>
                 <Text>Please choose the image of card to analyze:</Text>
                 <Button title="Choose Image" onPress={this.onButtonPress} />
+                <Image
+                    style={{ width: '100%', height: '100%', backgroundColor: '#ccc', }}
+                    resizeMode="contain"
+                    source={{uri: this.state.cardImageSource}}
+                />
                 <Toast ref="toast" position="center" />
             </View>
         );
