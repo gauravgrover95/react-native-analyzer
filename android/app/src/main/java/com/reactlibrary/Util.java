@@ -7,6 +7,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.os.Environment;
 
+// import org.apache.commons.math3.stat.regression.SimpleRegression;
+
 // java util imports
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -245,6 +247,30 @@ public class Util {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // SimpleRegression regR = new SimpleRegression();
+            // SimpleRegression regG = new SimpleRegression();
+            // SimpleRegression regB = new SimpleRegression();
+            // boolean incomplete = false;
+            // for (int i = 0; i < NB_BLOBS; i++) {
+            //     SampleModel s = samples.get(i);
+            //     if (s.getDataPointType() == SampleModel.DataPointType.NONE || !s.isUpdated()) {
+            //         incomplete = true;
+            //         break;
+            //     } else if (s.getDataPointType() == SampleModel.DataPointType.KNOWN) {
+            //         regR.addData(s.getConcentration(), s.getIntensities()[0]);
+            //         regG.addData(s.getConcentration(), s.getIntensities()[1]);
+            //         regB.addData(s.getConcentration(), s.getIntensities()[2]);
+            //     }
+            // }
+            // if (incomplete) {
+            //     Toast.makeText(this, "Incomplete Data!", Toast.LENGTH_SHORT).show();
+            //     return;
+            // }
+
+            // double slopes[] = new double[]{regR.getSlope(), regG.getSlope(), regB.getSlope()};
+            // double intercepts[] = new double[]{regR.getIntercept(), regG.getIntercept(), regB.getIntercept()};
+            // double r2Scores[] = new double[]{regR.getRSquare(), regG.getRSquare(), regB.getRSquare()};
 
             // image to be viewed on debugger app
             String processedImage = convertMatToBase64(raw);
