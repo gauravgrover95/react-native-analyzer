@@ -7,7 +7,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.os.Environment;
 
-// import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 // java util imports
 import java.util.HashMap;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Collections;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,6 +33,8 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import com.reactlibrary.SampleModel;
+import com.reactlibrary.IdAbscissaMap;
+import com.reactlibrary.ImageUtils;
 
 public class Util {
 
@@ -51,6 +54,7 @@ public class Util {
 
             byte[] decodedString = Base64.decode(imageAsBase64, Base64.DEFAULT);
             changedBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            changedBitmap = ImageUtils.lessResolution(changedBitmap, 600);
 
                 // samples basically is list of blobs found
                 samples = new HashMap<>();
@@ -126,8 +130,8 @@ public class Util {
                             raw,
                             new Point(r.x, r.y),
                             new Point(r.x + r.width, r.y + r.height),
-                            new Scalar( 255, 0, 0, 128),
-                            8
+                            new Scalar( 0, 255, 0, 128),
+                            2
                         );
                     }
                 }
@@ -196,7 +200,7 @@ public class Util {
                             new Point(r.x, r.y), 
                             new Point(r.x + r.width, r.y + r.height), 
                             new Scalar(0, 255, 0, 128), 
-                            8
+                            2
                         );
                     }
 
@@ -230,15 +234,17 @@ public class Util {
                     new Point(r.x, r.y),
                     new Point(r.x + r.width, r.y + r.height),
                     new Scalar(0, 255, 0, 128),
-                    8
+                    2
                 );
             }
             org.opencv.android.Utils.matToBitmap(raw, changedBitmap);
             // raw.release();
             gray.release();
             th.release();
-            if (rectIdx == NB_BLOBS) // changed
-                return "true";
+
+            // TODO: check for discrepancies
+            if (rectIdx != NB_BLOBS) // changed
+                return "false";
 
             // converting and saving the image to the local storage for better view
             Bitmap bmp = convertMatToBitmap(raw);
@@ -248,29 +254,49 @@ public class Util {
                 e.printStackTrace();
             }
 
-            // SimpleRegression regR = new SimpleRegression();
-            // SimpleRegression regG = new SimpleRegression();
-            // SimpleRegression regB = new SimpleRegression();
-            // boolean incomplete = false;
-            // for (int i = 0; i < NB_BLOBS; i++) {
-            //     SampleModel s = samples.get(i);
-            //     if (s.getDataPointType() == SampleModel.DataPointType.NONE || !s.isUpdated()) {
-            //         incomplete = true;
-            //         break;
-            //     } else if (s.getDataPointType() == SampleModel.DataPointType.KNOWN) {
-            //         regR.addData(s.getConcentration(), s.getIntensities()[0]);
-            //         regG.addData(s.getConcentration(), s.getIntensities()[1]);
-            //         regB.addData(s.getConcentration(), s.getIntensities()[2]);
-            //     }
-            // }
-            // if (incomplete) {
-            //     Toast.makeText(this, "Incomplete Data!", Toast.LENGTH_SHORT).show();
-            //     return;
-            // }
+            setValuesAutomatically();
 
-            // double slopes[] = new double[]{regR.getSlope(), regG.getSlope(), regB.getSlope()};
-            // double intercepts[] = new double[]{regR.getIntercept(), regG.getIntercept(), regB.getIntercept()};
-            // double r2Scores[] = new double[]{regR.getRSquare(), regG.getRSquare(), regB.getRSquare()};
+            // if(true)
+            //     return rects[5].toString();
+            //     // return result;
+            //     // return samples.toString();
+            //     // return String.valueOf(rects.length);
+
+            SimpleRegression regR = new SimpleRegression();
+            SimpleRegression regG = new SimpleRegression();
+            SimpleRegression regB = new SimpleRegression();
+            boolean incomplete = false;
+            for (int i = 0; i < NB_BLOBS; i++) {
+            // for (int i = 0; i < 6; i++) {
+                SampleModel s = samples.get(i);
+                if (s.getDataPointType() == SampleModel.DataPointType.NONE || !s.isUpdated()) {
+                    incomplete = true;
+                    break;
+                } else if (s.getDataPointType() == SampleModel.DataPointType.KNOWN) {
+                    regR.addData(s.getConcentration(), s.getIntensities()[0]);
+                    regG.addData(s.getConcentration(), s.getIntensities()[1]);
+                    regB.addData(s.getConcentration(), s.getIntensities()[2]);
+                }
+            }
+            if (incomplete) {
+                // Toast.makeText(this, "Incomplete Data!", Toast.LENGTH_SHORT).show();
+                return "incomplete";
+            }
+
+            double slopes[] = new double[]{regR.getSlope(), regG.getSlope(), regB.getSlope()};
+            double intercepts[] = new double[]{regR.getIntercept(), regG.getIntercept(), regB.getIntercept()};
+            double r2Scores[] = new double[]{regR.getRSquare(), regG.getRSquare(), regB.getRSquare()};
+
+            int model_color = FindSmallest(r2Scores);
+            SampleModel unknown = samples.get(NB_BLOBS-1);
+            if (unknown.getDataPointType() == SampleModel.DataPointType.UNKNOWN) {
+                double inten_val = unknown.getIntensities()[model_color];
+                // y = mx + c
+                double chol_val = slopes[model_color]*inten_val+intercepts[model_color];
+                return String.valueOf(chol_val);
+            }
+
+            // return "there is some problem";
 
             // image to be viewed on debugger app
             String processedImage = convertMatToBase64(raw);
@@ -316,7 +342,7 @@ public class Util {
         private static boolean isValidBlob(MatOfPoint contour) {
             boolean flag = true;
             double area = Imgproc.contourArea(contour);
-            if (area < 2000 || area > 16000)
+            if (area < 1000 || area > 16000)
                 flag = false;
             Rect r = Imgproc.boundingRect(contour);
             float aspectRatio;
@@ -330,6 +356,33 @@ public class Util {
             if (aspectRatio >= 1.5)
                 flag = false;
             return flag;
+        }
+
+        private static void setValuesAutomatically() {
+            ArrayList<IdAbscissaMap> idXMap = new ArrayList<>();
+            for (int idx = 0; idx < rects.length - 1; idx++) {
+                IdAbscissaMap iam = new IdAbscissaMap(rects[idx].x, idx);
+                idXMap.add(iam);
+            }
+            
+            Collections.sort(idXMap);
+            String qcIndices = "2";
+            // String qcIndices = getQCIndices();
+            double[] concentrations = new double[]{150, 175, 200, 225, 250, 300};
+            // double[] concentrations = getDefaultValues(); //, 300};//150, 175, 200, 225, 250, 300; 100, 150, 200, 250, 300, 350
+            for (int idx = 0; idx < idXMap.size(); idx++) {
+                int _id = idXMap.get(idx).getId();
+                SampleModel sm = samples.get(_id);
+                sm.setConcentration(concentrations[idx]);
+                if (!qcIndices.contains(String.valueOf(idx)))
+                    sm.setDataPointType(SampleModel.DataPointType.KNOWN);
+                else
+                    sm.setDataPointType(SampleModel.DataPointType.QUALITY_CONTROL);
+                sm.setUpdated(true);
+            }
+            samples.get(rects.length - 1).setDataPointType(SampleModel.DataPointType.UNKNOWN);
+            samples.get(rects.length - 1).setUpdated(true);
+            // updateBitmap();
         }
 
         // UTILITY FUNCTIONS
@@ -418,4 +471,16 @@ public class Util {
         }
 
 
+
+        public static int FindSmallest (double[] arr){
+            int index = 0;
+            double min = arr[index];
+            for (int i=1; i<arr.length; i++){
+                if (arr[i] < min ){
+                    min = arr[i];
+                    index = i;
+                }
+            }
+            return index ;
+        }
 }

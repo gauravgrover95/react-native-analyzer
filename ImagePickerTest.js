@@ -73,13 +73,18 @@ class ImagePickerTest extends React.Component {
         // })
 
         this.findBlobs(content).then(response => {
-            // console.log('response', response);
-            const source = { uri: 'data:image/jpeg;base64,' + response };
-            if (response) {
-                this.setState({
-                    ...this.state,
-                    cardImageSource: source.uri,
-                });
+            debugging = true;
+            // debugging = false;
+            if(debugging) {
+                console.log('response', response);
+            } else {
+                const source = { uri: 'data:image/jpeg;base64,' + response };
+                if (response) {
+                    this.setState({
+                        ...this.state,
+                        cardImageSource: source.uri,
+                    });
+                }
             }
         })
         

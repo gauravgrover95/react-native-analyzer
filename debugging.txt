@@ -52,4 +52,45 @@ Mat [ 36*1*CV_32SC2, isCont=true, isSubmat=false, nativeObj=0xffffffff8c4fea80, 
 
 // Imgproc.rectangle(raw, new Point(rSmall.x, rSmall.y), new Point(rSmall.x + rSmall.width, rSmall.y + rSmall.height), new Scalar(0, 0, 255), 1);
 
-            //Imgproc.rectangle(raw, new Point(rSmall.x, rSmall.y), new Point(rSmall.x + rSmall.width, rSmall.y + rSmall.height), new Scalar(0, 0, 255), 1);
+//Imgproc.rectangle(raw, new Point(rSmall.x, rSmall.y), new Point(rSmall.x + rSmall.width, rSmall.y + rSmall.height), new Scalar(0, 0, 255), 1);
+
+
+
+------
+
+## SAMPLES
+{
+    0={Intensity:115.0,
+    Concentration:0.0,
+    Updated:false},
+
+    1={Intensity:101.0,
+    Concentration:0.0,
+    Updated:false},
+
+    2={Intensity:84.0,
+    Concentration:0.0,
+    Updated:false},
+
+    3={Intensity:80.0,
+    Concentration:0.0,
+    Updated:false},
+
+    4={Intensity:65.0,
+    Concentration:0.0,
+    Updated:false},
+
+    5={Intensity:50.0,
+    Concentration:0.0,
+    Updated:false}
+}
+
+## IDXMAP
+[
+{id:0, X:653},
+{id:1, X:779},
+{id:2, X:902},
+{id:3, X:1027},
+{id:4, X:1150},
+{id:5, X:1274}
+]
